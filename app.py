@@ -8,12 +8,44 @@ st.set_page_config(page_title="Gemini Chatbot", page_icon="🤖")
 st.title("Gemini 3.1 Flash Chatbot 🚀")
 st.caption("Type your message or click the microphone icon inside the box to speak!")
 
-# Load Gemini API Key
+# --- STEP 1: SAFE API KEY HANDLING (Fallback Chain) ---
+# Check if secrets.toml exists. If it doesn't, we don't throw an error; we just default to None.
+secrets_key = None
 try:
-    api_key = st.secrets["GEMINI_API_KEY"]
-except KeyError:
-    st.error("Missing API Key! Please create `.streamlit/secrets.toml` and add `GEMINI_API_KEY = 'your_key'`")
+    if "GEMINI_API_KEY" in st.secrets:
+        secrets_key = st.secrets["GEMINI_API_KEY"]
+except Exception:
+    # This catches instances where .streamlit/secrets.toml doesn't exist at all
+    pass
+
+# Setup the sidebar interface
+with st.sidebar:
+    st.header("Settings ⚙️")
+    
+    # If the key was found in secrets, we use it as the default/placeholder
+    if secrets_key:
+        api_key = st.text_input(
+            "Google Gemini API Key:", 
+            value=secrets_key, 
+            type="password",
+            help="Loaded securely from secrets.toml"
+        )
+        st.success("API Key loaded from local secrets!")
+    else:
+        # If secrets.toml is missing, the field is blank and prompts the user
+        api_key = st.text_input(
+            "Enter Google Gemini API Key:", 
+            type="password",
+            placeholder="AIzaSy..."
+        )
+        st.info("💡 Tip: You can skip typing this by creating a `.streamlit/secrets.toml` file.")
+        st.markdown("[Get a free key from Google AI Studio](https://aistudio.google.com/)")
+
+# Block execution until an API key is available via either method
+if not api_key:
+    st.warning("Please provide a Gemini API Key in the sidebar to wake up the chatbot.", icon="🔑")
     st.stop()
+
 
 client = genai.Client(api_key=api_key)
 
