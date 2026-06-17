@@ -6,10 +6,16 @@ st.set_page_config(page_title="Gemini Chatbot", page_icon="🤖")
 st.title("Gemini 3.5 Flash Chatbot 🚀")
 st.caption("Powered by Google AI Studio Free Tier")
 
-# 1. Handle API Key input securely
-# You can set this as an environment variable, or use this sidebar box for testing
+# 1. Handle API Key input securely (Checks st.secrets for a default value)
 with st.sidebar:
-    api_key = st.text_input("Enter Google Gemini API Key:", type="password")
+    # Looks for 'API_KEY' in your secrets. If not found, defaults to an empty string.
+    default_key = st.secrets.get("API_KEY", "")
+    
+    api_key = st.text_input(
+        "Enter Google Gemini API Key:", 
+        value=default_key, 
+        type="password"
+    )
     st.markdown("[Get a free key from Google AI Studio](https://aistudio.google.com/)")
 
 if not api_key:
@@ -50,7 +56,7 @@ if prompt := st.chat_input("Ask me anything..."):
     google_contents.append(types.Content(role="user", parts=[types.Part.from_text(text=prompt)]))
     st.session_state.chat_history.append({"role": "user", "content": prompt})
 
-    # 5. Generate Response using Gemini 3.5 Flash (Super fast and free-tier friendly)
+    # 5. Generate Response using Gemini 3.5 Flash
     with st.chat_message("assistant"):
         response_placeholder = st.empty()
         full_response = ""
