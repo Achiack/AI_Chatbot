@@ -3,7 +3,7 @@ from google import genai
 from google.genai import types
 
 st.set_page_config(page_title="Gemini Chatbot", page_icon="🤖")
-st.title("Gemini 3.5 Flash Chatbot 🚀")
+st.title("Gemini 3.1 Flash Chatbot 🚀")
 st.caption("Powered by Google AI Studio Free Tier")
 
 # 1. Initialize Sidebar for API Key
@@ -69,7 +69,7 @@ if prompt := st.chat_input("Ask me anything..."):
         try:
             # Call the stream API for that nice typewriter effect
             response_stream = client.models.generate_content_stream(
-                model='gemini-3.5-flash',
+                model='gemini-3.1-flash-lite',
                 contents=google_contents,
                 config=types.GenerateContentConfig(
                     system_instruction=system_instruction,
