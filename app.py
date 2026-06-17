@@ -6,10 +6,14 @@ st.set_page_config(page_title="Gemini Chatbot", page_icon="🤖")
 st.title("Gemini 3.5 Flash Chatbot 🚀")
 st.caption("Powered by Google AI Studio Free Tier")
 
-# 1. Handle API Key input securely (Checks st.secrets for a default value)
+# 1. Initialize Sidebar for API Key
 with st.sidebar:
-    # Looks for 'API_KEY' in your secrets. If not found, defaults to an empty string.
-    default_key = st.secrets.get("API_KEY", "")
+    default_key = ""
+    try:
+        if "API_KEY" in st.secrets:
+            default_key = st.secrets["API_KEY"]
+    except Exception:
+        pass
     
     api_key = st.text_input(
         "Enter Google Gemini API Key:", 
@@ -18,26 +22,27 @@ with st.sidebar:
     )
     st.markdown("[Get a free key from Google AI Studio](https://aistudio.google.com/)")
 
-if not api_key:
-    st.info("Please add your Gemini API key in the sidebar to continue.", icon="🔑")
-    st.stop()
-
-# Initialize the Google GenAI Client
-client = genai.Client(api_key=api_key)
-
-# 2. Setup System Instructions (Give your bot a persona)
-system_instruction = "You are a helpful, professional workplace AI assistant. Keep responses concise."
-
-# 3. Maintain Chat History in Streamlit Session State
+# 2. Maintain Chat History in Streamlit Session State
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# Display previous messages
+# Display previous messages (This keeps the chat interface visible)
 for message in st.session_state.chat_history:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# 4. Handle User Input
+# 3. Guard Rail: Stop execution HERE if there is no API Key
+if not api_key:
+    st.info("Please add your Gemini API key in the sidebar to continue.", icon="🔑")
+    st.stop()
+
+# Initialize the Google GenAI Client (Only runs if API key is present)
+client = genai.Client(api_key=api_key)
+
+# 4. Setup System Instructions 
+system_instruction = "You are a helpful, professional workplace AI assistant. Keep responses concise."
+
+# 5. Handle User Input
 if prompt := st.chat_input("Ask me anything..."):
     # Show user message immediately
     with st.chat_message("user"):
