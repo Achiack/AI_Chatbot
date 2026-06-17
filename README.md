@@ -37,7 +37,14 @@ Once your virtual environment is active (you should see `(.venv)` at the beginni
 pip install -r requirements.txt
 ```
 
-### 4. Launch the App
+### 4. Add API Keys
+Create a directory called `.streamlit` and add a file `secrets.toml` with the following contents:
+```
+# .streamlit/secrets.toml
+GEMINI_API_KEY = "YOUR_API_KEY_HERE"
+```
+
+### 5. Launch the App
 Run the Streamlit server to open the app in your browser:
 
 ```cmd
